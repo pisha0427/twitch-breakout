@@ -29,8 +29,10 @@ MAX_RETRIES = 5
 
 class HelixClient:
     def __init__(self, client_id: str | None = None, client_secret: str | None = None):
-        self.client_id = client_id or os.environ.get("TWITCH_CLIENT_ID", "")
-        self.client_secret = client_secret or os.environ.get("TWITCH_CLIENT_SECRET", "")
+        # strip(): secrets pasted into GitHub/UIs often carry a trailing newline,
+        # which breaks the OAuth request with an unhelpful 403 — trim it here.
+        self.client_id = str(client_id or os.environ.get("TWITCH_CLIENT_ID", "")).strip()
+        self.client_secret = str(client_secret or os.environ.get("TWITCH_CLIENT_SECRET", "")).strip()
         if not self.client_id or not self.client_secret:
             raise SystemExit(
                 "Missing TWITCH_CLIENT_ID / TWITCH_CLIENT_SECRET. "
